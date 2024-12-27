@@ -1,3 +1,5 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Disable GPU usage
 from flask import Flask, request, jsonify
 import torch
 
