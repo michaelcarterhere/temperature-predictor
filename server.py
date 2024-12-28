@@ -25,7 +25,7 @@ class SimpleRNN(nn.Module):
 app = Flask(__name__)
 
 # Dropbox link to the model file
-model_url = "https://www.dropbox.com/s/abcd1234/simple_rnn.pth?dl=1"
+model_url = "https://www.dropbox.com/s/abcd1234/simple_rnn.pth?dl=1"  # Replace with your Dropbox link
 model_path = "simple_rnn.pth"
 
 # Download the model if not present
@@ -37,10 +37,14 @@ if not os.path.exists(model_path):
             f.write(chunk)
     print("Model downloaded successfully!")
 
-# Define the model and load the state dictionary
+# Initialize the model with the correct architecture
 model = SimpleRNN(input_size=1, hidden_size=10, output_size=1)
-model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))  # Map to CPU
-model.eval()  # Set the model to evaluation mode
+
+# Load the state dictionary
+model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+
+# Set the model to evaluation mode
+model.eval()
 
 @app.route('/')
 def home():
@@ -59,4 +63,3 @@ def predict():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
