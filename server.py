@@ -59,8 +59,22 @@ def predict():
         input_tensor = torch.tensor(data, dtype=torch.float32).view(-1, 1, 1)  # Reshape for RNN
         predictions = model(input_tensor)  # Perform inference
         predictions_list = predictions.squeeze().tolist()  # Convert to a Python list
-        return jsonify({'predictions': predictions_list})
+
+        # Handle case where predictions_list might be a scalar
+        if not isinstance(predictions_list, list):
+            predictions_list = [predictions_list]
+
+        # Debugging logs for Render
+        print(f"DEBUG: Input Data: {data}")
+        print(f"DEBUG: Predictions Tensor: {predictions}")
+        print(f"DEBUG: Predictions List: {predictions_list}")
+
+        # Return predictions as JSON
+        response = jsonify({'predictions': predictions_list})
+        response.headers['Content-Type'] = 'application/json'
+        return response
     except Exception as e:
+        print(f"ERROR: {str(e)}")  # Log the error
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
 if __name__ == "__main__":
