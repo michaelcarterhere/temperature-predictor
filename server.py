@@ -42,6 +42,12 @@ model = SimpleRNN(input_size=1, hidden_size=8, output_size=1)  # Match hidden_si
 model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))  # Load weights
 model.eval()  # Set model to evaluation mode
 
+# Home route
+@app.route('/')
+def home():
+    return "Your Flask app is running on Render!"
+
+# Predict route
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json.get('sequence', [])
