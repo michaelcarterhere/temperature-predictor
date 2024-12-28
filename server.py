@@ -25,7 +25,7 @@ class SimpleRNN(nn.Module):
 app = Flask(__name__)
 
 # Dropbox link to the model file
-model_url = "https://www.dropbox.com/s/abcd1234/simple_rnn.pth?dl=1"  # Replace with your Dropbox link
+model_url = "model_url = "https://drive.google.com/uc?id=19Xq4G-4mR93TWE6r7dGjM2M6qX3Dtjhc"  # Replace with your Dropbox link
 model_path = "simple_rnn.pth"
 
 # Download the model if not present
