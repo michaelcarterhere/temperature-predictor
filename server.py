@@ -31,19 +31,16 @@ model_path = "simple_rnn.pth"
 # Download the model if not present
 if not os.path.exists(model_path):
     print("Downloading model from Dropbox...")
-    response = requests.get(model_url)
+    response = requests.get(model_url, stream=True)  # Use stream=True for binary files
     with open(model_path, 'wb') as f:
-        f.write(response.content)
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
     print("Model downloaded successfully!")
 
-# Load the model architecture
+# Define the model and load the state dictionary
 model = SimpleRNN(input_size=1, hidden_size=10, output_size=1)
-
-# Load the state dictionary
-model.load_state_dict(torch.load(model_path))
-
-# Set the model to evaluation mode
-model.eval()
+model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))  # Map to CPU
+model.eval()  # Set the model to evaluation mode
 
 @app.route('/')
 def home():
@@ -55,10 +52,11 @@ def predict():
     if not data:
         return jsonify({'error': 'No sequence provided'}), 400
 
-    # Example logic: Replace with your actual model inference
+    # Reshape input data and make predictions
     input_tensor = torch.tensor(data, dtype=torch.float32).view(-1, 1, 1)  # Reshape for RNN
     prediction = model(input_tensor).item()  # Perform inference
     return jsonify({'prediction': prediction})
 
 if __name__ == "__main__":
     app.run(debug=True)
+
