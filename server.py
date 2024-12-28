@@ -42,20 +42,20 @@ model = SimpleRNN(input_size=1, hidden_size=8, output_size=1)  # Match hidden_si
 model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))  # Load weights
 model.eval()  # Set model to evaluation mode
 
-@app.route('/')
-def home():
-    return "Your Flask app is running on Render!"
-
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json.get('sequence', [])
     if not data:
         return jsonify({'error': 'No sequence provided'}), 400
 
-    # Reshape input data and make predictions
-    input_tensor = torch.tensor(data, dtype=torch.float32).view(-1, 1, 1)  # Reshape for RNN
-    prediction = model(input_tensor).item()  # Perform inference
-    return jsonify({'prediction': prediction})
+    try:
+        # Reshape input data and make predictions
+        input_tensor = torch.tensor(data, dtype=torch.float32).view(-1, 1, 1)  # Reshape for RNN
+        predictions = model(input_tensor)  # Perform inference
+        predictions_list = predictions.squeeze().tolist()  # Convert to a Python list
+        return jsonify({'predictions': predictions_list})
+    except Exception as e:
+        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
 if __name__ == "__main__":
     # Use the PORT environment variable or default to 5000
