@@ -50,34 +50,26 @@ def home():
 # Predict route
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.json.get('sequence', [])
-    if not data:
-        return jsonify({'error': 'No sequence provided'}), 400
-
     try:
+        # Parse and validate input
+        data = request.json.get('sequence', [])
+        if not isinstance(data, list) or not data:
+            return jsonify({'error': 'Input must be a non-empty list of numbers'}), 400
+
         # Reshape input data and make predictions
         input_tensor = torch.tensor(data, dtype=torch.float32).view(-1, 1, 1)  # Reshape for RNN
-        predictions = model(input_tensor)  # Perform inference
-        predictions_list = predictions.squeeze().tolist()  # Convert to a Python list
+        predictions = model(input_tensor).squeeze().tolist()  # Perform inference and convert to list
 
-        # Handle case where predictions_list might be a scalar
-        if not isinstance(predictions_list, list):
-            predictions_list = [predictions_list]
+        # Ensure predictions are always returned as a list
+        if isinstance(predictions, float):  # Handle single scalar prediction case
+            predictions = [predictions]
 
-        # Debugging logs for Render
-        print(f"DEBUG: Input Data: {data}")
-        print(f"DEBUG: Predictions Tensor: {predictions}")
-        print(f"DEBUG: Predictions List: {predictions_list}")
-
-        # Return predictions as JSON
-        response = jsonify({'predictions': predictions_list})
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        return jsonify({'predictions': predictions})
     except Exception as e:
-        print(f"ERROR: {str(e)}")  # Log the error
-        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
+        print(f"ERROR: {str(e)}")  # Log error details
+        return jsonify({'error': 'An error occurred during prediction. Please check your input.'}), 500
 
 if __name__ == "__main__":
-    # Use the PORT environment variable or default to 5000
-    port = int(os.environ.get("PORT", 8080))  # Default to 8080 if PORT is not set
+    # Use the PORT environment variable or default to 8080
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port, debug=True)
