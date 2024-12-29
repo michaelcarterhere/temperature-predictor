@@ -4,7 +4,7 @@ import torch.nn as nn
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-CORS(app)  # Enable CORS for all routes
+
 
 # Disable GPU usage
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -25,6 +25,7 @@ class SimpleRNN(nn.Module):
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Google Drive link to the model file
 model_url = "https://drive.google.com/uc?id=19Xq4G-4mR93TWE6r7dGjM2M6qX3Dtjhc"
