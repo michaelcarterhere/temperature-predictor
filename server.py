@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+CORS(app)  # Enable CORS for all routes
 
 # Disable GPU usage
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
